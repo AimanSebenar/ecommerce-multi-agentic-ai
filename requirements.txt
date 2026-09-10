@@ -1,0 +1,16 @@
+# MCP server + inspector CLI (mcp dev ...)
+mcp[cli]>=1.2.0
+
+# Database
+psycopg2-binary>=2.9
+SQLAlchemy>=2.0
+sqlparse>=0.5
+
+# Config
+python-dotenv>=1.0
+
+# OpenRouter client (OpenAI-compatible) - used from Step 4 onward
+openai>=1.30
+
+# Later steps (orchestration UI) - safe to install now
+streamlit>=1.38
