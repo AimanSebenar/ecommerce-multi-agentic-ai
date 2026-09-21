@@ -1,7 +1,13 @@
-from mcp.server.fastmcp import FastMCP
-from mcp_server import db 
+from mcp.server.mcpserver import MCPServer
+# from mcp_server import db 
 
-mcp = FastMCP('commerce-db')
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import db
+
+
+mcp = MCPServer('commerce-db')
 
 
 @mcp.tool()
@@ -12,7 +18,7 @@ def list_tables() -> list[str]:
 @mcp.tool()
 def get_schema(table_name: str) -> dict:
     """
-    Get the column names, ta=ypes, and nullability for one table.
+    Get the column names, types, and nullability for one table.
     Call list_tables first if you don't know the table name.
     """
     return db.get_table_schema(table_name)
