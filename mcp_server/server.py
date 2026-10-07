@@ -24,6 +24,14 @@ def get_schema(table_name: str) -> dict:
     return db.get_table_schema(table_name)
 
 @mcp.tool()
+def get_database_schema() -> dict:
+    """
+    Return the full public schema for the commerce database as a mapping of
+    table name to column metadata.
+    """
+    return db.get_database_schema()
+
+@mcp.tool()
 def run_query(sql: str, limit: int = 200) -> dict:
     """
     Run a read-only SQL SELECT query against the commerce database and
@@ -37,7 +45,7 @@ def run_query(sql: str, limit: int = 200) -> dict:
     Args:
         sql: A single SELECT statement. e.g.
             "SELECT customer_state, COUNT(*) FROM customers GROUP BY 1"
-        limit: Max rows to return (default 200, hard cao 1000).
+        limit: Max rows to return (default 200, hard cap 1000).
     
     Returns:
         A dict with `columns` (list of column names), `rows` (list of row value lists), and `row_count`.

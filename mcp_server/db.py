@@ -103,10 +103,19 @@ def list_tables() -> list[str]:
         result = conn.execute(
             text(
                 "SELECT table_name FROM information_schema.tables "
-                "WHERE table_schema = 'public' ORDER BY table_name"
+                "WHERE table_schema = 'public' "
+                "ORDER BY table_name"
             )
         )
         return [row[0] for row in result.fetchall()]
+
+
+def get_database_schema() -> dict[str, list[dict]]:
+    tables = {}
+    for table_name in list_tables():
+        tables[table_name] = get_table_schema(table_name)['columns']
+    return tables
+
 
 def get_table_schema(table_name: str) -> dict:
     engine = get_engine()

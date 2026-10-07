@@ -9,6 +9,7 @@ each tool. Run it after `docker compose up -d` and `python data/load_data.py`.
 
 import asyncio
 import json
+import sys
 
 from mcp import ClientSession, StdioServerParameters
 from mcp.client.stdio import stdio_client
@@ -16,7 +17,7 @@ from mcp.client.stdio import stdio_client
 
 async def main():
     server_params = StdioServerParameters(
-        command="python",
+        command=sys.executable,
         args=["-m", "mcp_server.server"],
     )
 

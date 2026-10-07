@@ -1,9 +1,10 @@
+import sys
 from contextlib import asynccontextmanager
 from mcp import ClientSession, StdioServerParameters
 from mcp.client.stdio import stdio_client
 
 SERVER_PARAMS = StdioServerParameters(
-    command="python",
+    command=sys.executable,
     args=["-m", "mcp_server.server"],
 )
 
@@ -33,6 +34,15 @@ async def tools_as_openai_schema(session: ClientSession) -> list[dict]:
 
 async def call_tool(session: ClientSession, name: str, args: dict) -> str:
     result = await session.call_tool(name, args)
-    if result.content and hasattr(result.content[0], "text"):
-        return result.content[0].text
-    return str(result.content)
+    if not result.content:
+        return ""
+
+    texts = []
+    for item in result.content:
+        text = getattr(item, "text", None)
+        if text is not None:
+            texts.append(text)
+        else:
+            texts.append(str(item))
+
+    return "\n".join(texts)
