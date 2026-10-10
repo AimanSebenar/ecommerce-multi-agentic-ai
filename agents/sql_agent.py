@@ -21,6 +21,7 @@ Rules:
 async def run_sql_agent(question: str, session, tools_schema: list[dict], trace: list[dict]) -> str:
     client = get_client()
     model = get_model()
+    last_data: dict | None = None
 
     messages = [
         {"role": "system", "content": SYSTEM_PROMPT},
@@ -38,7 +39,7 @@ async def run_sql_agent(question: str, session, tools_schema: list[dict], trace:
 
         if not msg.tool_calls:
             trace.append({"agent": "sql_analyst", "type": "final_answer", "content": msg.content})
-            return msg.content
+            return {"answer": msg.content, "data": last_data}
 
         #happens if need to call tools again
 
@@ -75,6 +76,14 @@ async def run_sql_agent(question: str, session, tools_schema: list[dict], trace:
                     "content": result_text,
                 }
             )
+
+            if tc.function.name == "run_query":
+                try:
+                    parsed = json.loads(result_text)
+                    if isinstance(parsed, dict) and "error" not in parsed:
+                        last_data = parsed
+                except (json.JSONDecodeError, TypeError):
+                    pass
     fallback = "I was not able to reach a final answer within the step limit."
     trace.append({"agent": "sql_analyst", "type": "final_answer", "content": fallback})
-    return fallback
+    return {"answer": fallback, "data": last_data}

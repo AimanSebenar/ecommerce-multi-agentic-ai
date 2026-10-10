@@ -80,6 +80,7 @@ def assert_query_is_safe(sql: str) -> None:
 
     if ";" in sql.strip().rstrip(";"):
         raise UnsafeQueryError("Multiple statements are not allowed.")
+    # print(sql)
 
 def run_select(sql: str, limit: int = DEFAULT_ROW_LIMIT) -> dict:
     """Safely run a read only query and return {columns, rows, row_count}"""
@@ -87,7 +88,7 @@ def run_select(sql: str, limit: int = DEFAULT_ROW_LIMIT) -> dict:
     assert_query_is_safe(sql)
     limit = max(1, min(limit, MAX_ROW_LIMIT))
 
-    wrapped =  f"SELECT * FROM ({sql.rstrip(':')}) AS sub LIMIT :limit"
+    wrapped =  f"SELECT * FROM ({sql.strip().rstrip(';')}) AS sub LIMIT :limit"
 
     engine = get_engine()
     with engine.connect() as conn:

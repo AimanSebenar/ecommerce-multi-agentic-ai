@@ -1,6 +1,7 @@
 from agents.sql_agent import run_sql_agent
 from agents.insight_agent import run_insight_agent
 from agents.narrative_agent import run_narrative_agent
+import json
 
 async def handle_question(question: str, session, tools_schema: list[dict]) -> dict:
     #a record of the agent's workflow
@@ -10,6 +11,9 @@ async def handle_question(question: str, session, tools_schema: list[dict]) -> d
         "content": "sql_analyst -> insight -> narrative"}]
 
     sql_answer = await run_sql_agent(question, session, tools_schema, trace)
+    # sql_answer = json.loads(sql_answer_tempt) 
+    print('________________________________________________')
+    print(sql_answer)
     insight_text = run_insight_agent(question, sql_answer["data"], trace)
     narrative_text = run_narrative_agent(question,sql_answer["answer"], insight_text, trace)
 
